@@ -1,4 +1,4 @@
-# Hedgi Swarm
+# Agent Swarm
 
 A multi-agent coding system, driven from VS Code chat, that turns a request
 into reviewed, sandbox-verified code:
