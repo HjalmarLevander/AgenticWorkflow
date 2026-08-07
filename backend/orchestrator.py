@@ -30,29 +30,55 @@ def approve_plan(session_id: str) -> SwarmState:
 
 
 def approve_draft(session_id: str) -> SwarmState:
+    """Runs as a FastAPI BackgroundTask — exceptions here are silently
+    swallowed by the framework unless caught, which would otherwise leave
+    the session stuck at whatever stage it was on forever, with no signal
+    to the polling client that anything went wrong. Always land on a
+    terminal stage."""
     state = SESSIONS[session_id]
     state.stage = Stage.ENGINEERING
-    _build_and_review(state)
+    try:
+        _build_and_review(state)
+    except Exception as e:
+        state.stage = Stage.FAILED
+        state.error = f"{type(e).__name__}: {e}"
     return state
 
 
 def _build_and_review(state: SwarmState) -> None:
+    """Two independent revision triggers share one budget (MAX_REVISIONS):
+    the Critic rejecting the code, or the Runner actually failing to execute
+    it. Runner failure is ground truth and was previously a dead end — the
+    pipeline would record the failure and stop instead of sending it back to
+    the Engineer, even though a critic-approved change can still fail to
+    run (verified: missing a dependency, or a bug the Critic's read-through
+    didn't catch)."""
     style_context = query_style(f"{state.plan.rationale}\n{state.plan.layout_style}")
-    feedback = None
+    critic_feedback = None
+    runner_feedback = None
 
     while True:
-        state.engineer_output = run_engineer(state.plan, style_context, feedback)
+        state.engineer_output = run_engineer(state.plan, style_context, critic_feedback, runner_feedback)
+        critic_feedback = runner_feedback = None
+
         state.stage = Stage.CRITIQUING
         state.critic_report = run_critic(state.engineer_output)
+        if not state.critic_report.approved and state.revision_count < MAX_REVISIONS:
+            critic_feedback = state.critic_report
+            state.revision_count += 1
+            state.stage = Stage.ENGINEERING
+            continue
 
-        if state.critic_report.approved or state.revision_count >= MAX_REVISIONS:
-            break
-        feedback = state.critic_report
-        state.revision_count += 1
-        state.stage = Stage.ENGINEERING
+        state.stage = Stage.RUNNING
+        state.run_result = run_runner(state.engineer_output)
+        if not state.run_result.passed and state.revision_count < MAX_REVISIONS:
+            runner_feedback = state.run_result
+            state.revision_count += 1
+            state.stage = Stage.ENGINEERING
+            continue
 
-    state.stage = Stage.RUNNING
-    state.run_result = run_runner(state.engineer_output)
+        break
+
     state.stage = Stage.DONE if state.run_result.passed else Stage.FAILED
 
 

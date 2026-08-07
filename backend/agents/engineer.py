@@ -1,7 +1,7 @@
 from typing import Optional
 
 from backend.llm import structured
-from backend.schemas import ArchitecturePlan, CriticReport, EngineerOutput
+from backend.schemas import ArchitecturePlan, CriticReport, EngineerOutput, RunResult
 
 SYSTEM = """You are a senior engineer producing code that will be reviewed by a
 staff engineer before it ships. Correctness and simplicity both matter — a
@@ -43,10 +43,21 @@ def run_engineer(
     plan: ArchitecturePlan,
     style_context: str,
     critic_feedback: Optional[CriticReport] = None,
+    runner_feedback: Optional[RunResult] = None,
 ) -> EngineerOutput:
     system = SYSTEM.format(style_context=style_context or "(none provided)")
     prompt = f"Build this plan:\n{plan.model_dump_json(indent=2)}"
     if critic_feedback:
         issues = "\n".join(f"- [{f.severity}] {f.file}: {f.summary}" for f in critic_feedback.findings)
         prompt += f"\n\nFix these issues from review, keep everything else:\n{issues}"
-    return structured(system, prompt, EngineerOutput, max_tokens=6000)
+    if runner_feedback:
+        # This is ground truth, not opinion — the code actually ran and
+        # this is what happened. Weight it accordingly in the prompt.
+        prompt += (
+            f"\n\nThe code was actually executed and failed. Fix the real "
+            f"bug(s) shown below, keep everything else:\n{runner_feedback.log}"
+        )
+    # 6000 was insufficient for a genuinely multi-function module (verified:
+    # a 5-function PCA module with docstrings hit the cap and failed cleanly
+    # rather than silently truncating — see llm.py's TruncatedOutput).
+    return structured(system, prompt, EngineerOutput, max_tokens=10000)

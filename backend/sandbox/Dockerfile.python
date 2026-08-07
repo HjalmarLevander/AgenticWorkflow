@@ -1,3 +1,9 @@
 FROM python:3.12-slim
-RUN pip install --no-cache-dir pytest
+# Baked in at build time (network available then) so the sandbox can still
+# run with --network none at execution time. numpy/pandas/scikit-learn cover
+# the common case for this project; an Engineer output needing something
+# outside this set fails cleanly with ModuleNotFoundError in run_result.log
+# rather than silently -- that's a correct failure, not a bug, until it's
+# common enough to be worth adding here too.
+RUN pip install --no-cache-dir pytest numpy pandas scikit-learn statsmodels
 WORKDIR /workspace

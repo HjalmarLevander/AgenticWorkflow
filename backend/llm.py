@@ -6,7 +6,7 @@ import os
 from typing import TypeVar
 
 import anthropic
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 # Sonnet 5 is ~40% the cost of Opus 5 and plenty capable for this pipeline's
 # agents — override with ROBIN_MODEL=claude-opus-5 if you want max quality
@@ -65,7 +65,7 @@ def _check_truncation(resp) -> None:
         )
 
 
-def structured(system: str, user: str, schema: type[T], max_tokens: int = MAX_TOKENS) -> T:
+def _structured_once(system: str, user: str, schema: type[T], max_tokens: int) -> T:
     resp = client.messages.create(
         model=MODEL,
         max_tokens=max_tokens,
@@ -82,6 +82,19 @@ def structured(system: str, user: str, schema: type[T], max_tokens: int = MAX_TO
     _check_truncation(resp)
     text = next(b.text for b in resp.content if b.type == "text")
     return schema.model_validate_json(text)
+
+
+def structured(system: str, user: str, schema: type[T], max_tokens: int = MAX_TOKENS) -> T:
+    """Structured outputs occasionally comes back as invalid JSON even when
+    stop_reason isn't "max_tokens" (a real, if rare, generation hiccup —
+    verified: a 5-file engineering output failed this way once in testing).
+    One retry clears it almost always; a second failure is worth surfacing
+    rather than silently retrying forever."""
+    try:
+        return _structured_once(system, user, schema, max_tokens)
+    except ValidationError as e:
+        print(f"[llm] structured output failed to parse, retrying once: {e}")
+        return _structured_once(system, user, schema, max_tokens)
 
 
 def text(system: str, user: str, max_tokens: int = MAX_TOKENS) -> str:

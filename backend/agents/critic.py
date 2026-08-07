@@ -61,4 +61,7 @@ def run_critic(output: EngineerOutput) -> CriticReport:
     system = SYSTEM.format(references=references)
 
     files = "\n\n".join(f"# {f.path}\n{f.content}" for f in output.files)
-    return structured(system, files, CriticReport)
+    # 4000 (the shared default) was insufficient for a five-part checklist
+    # review of a genuinely multi-file output — verified: hit the cap and
+    # failed cleanly on a 2-file, ~150-line engineering output.
+    return structured(system, files, CriticReport, max_tokens=8000)
