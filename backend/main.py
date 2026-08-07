@@ -6,7 +6,7 @@ import uuid
 from fastapi import BackgroundTasks, FastAPI, HTTPException
 from pydantic import BaseModel
 
-from backend import orchestrator
+from backend import llm, orchestrator
 from backend.schemas import SwarmState
 from backend.style_vault import ingest
 
@@ -52,3 +52,9 @@ def approve_draft(session_id: str, background: BackgroundTasks) -> SwarmState:
 def ingest_style() -> dict:
     """Call after adding/updating files in style_vault/ to re-embed them."""
     return {"chunks_indexed": ingest()}
+
+
+@app.get("/cost")
+def cost() -> dict:
+    """Running estimate of API spend this server process, in USD."""
+    return {"estimated_total_usd": round(llm._total_cost, 4), "model": llm.MODEL}
