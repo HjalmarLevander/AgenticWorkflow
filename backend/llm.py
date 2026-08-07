@@ -9,9 +9,9 @@ import anthropic
 from pydantic import BaseModel
 
 # Sonnet 5 is ~40% the cost of Opus 5 and plenty capable for this pipeline's
-# agents — override with HEDGI_MODEL=claude-opus-5 if you want max quality
+# agents — override with ROBIN_MODEL=claude-opus-5 if you want max quality
 # and are less cost-sensitive.
-MODEL = os.environ.get("HEDGI_MODEL", "claude-sonnet-5")
+MODEL = os.environ.get("ROBIN_MODEL", "claude-sonnet-5")
 MAX_TOKENS = 4000  # these agents return one plan/file-set/report, not essays
 
 # Conservative (non-intro) per-million-token rates, USD. Used only to print a

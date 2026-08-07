@@ -53,7 +53,7 @@ function renderPlan(stream: vscode.ChatResponseStream, state: SwarmState) {
 }
 
 async function showDraftWebview(html: string) {
-  const panel = vscode.window.createWebviewPanel("hedgiDraft", "Hedgi — Draft Sketch", vscode.ViewColumn.Beside, {});
+  const panel = vscode.window.createWebviewPanel("robinDraft", "Robin — Draft Sketch", vscode.ViewColumn.Beside, {});
   panel.webview.html = html;
 }
 

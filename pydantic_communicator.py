@@ -17,7 +17,7 @@ class ArchitecturePlan(BaseModel):
     rationale: str = Field(description="Why this architecture was chosen")
     layout_style: str = Field(description="CSS strategy (e.g., CSS Grid, Flexbox)")
     components: List[UIComponent]
-    file_name: str = Field(description="The target file name, e.g., 'hedgi_dashboard.html'")
+    file_name: str = Field(description="The target file name, e.g., 'robin_dashboard.html'")
 
 # ==========================================
 # 2. Agent 1: The Planner (Structured Output)

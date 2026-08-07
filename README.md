@@ -1,4 +1,4 @@
-# Agent Swarm
+# Robin Swarm
 
 A multi-agent coding system, driven from VS Code chat, that turns a request
 into reviewed, sandbox-verified code:
@@ -15,7 +15,7 @@ real pass/fail).
 
 ```
 VS Code Extension (TypeScript)         FastAPI Backend (Python)
-  @hedgi chat participant      HTTP     backend/main.py
+  @robin chat participant      HTTP     backend/main.py
   webview for HTML draft      ─────▶    backend/orchestrator.py  (state machine)
   applyEdit() for final diff  ◀─────    backend/agents/*.py      (one file per agent)
                                         backend/style_vault.py   (local RAG over style_vault/)
@@ -41,8 +41,8 @@ pip install -r backend/requirements.txt
 ant auth login   # brew install anthropics/tap/ant, then this opens a browser
 
 # Sandbox images (built once, cached after)
-docker build -t hedgi-sandbox-python -f backend/sandbox/Dockerfile.python backend/sandbox
-docker build -t hedgi-sandbox-node -f backend/sandbox/Dockerfile.node backend/sandbox
+docker build -t robin-sandbox-python -f backend/sandbox/Dockerfile.python backend/sandbox
+docker build -t robin-sandbox-node -f backend/sandbox/Dockerfile.node backend/sandbox
 
 # Extension
 cd extension && npm install
@@ -68,13 +68,13 @@ uvicorn backend.main:app --reload   # starts on :8000
 ```
 
 Then in VS Code: open `extension/`, press F5 to launch the Extension
-Development Host, and use `@hedgi <request>` in the chat panel.
+Development Host, and use `@robin <request>` in the chat panel.
 
 ### Cost
 
 Defaults to `claude-sonnet-5`. A full run (plan → draft → build → review →
 verify, no revisions needed) costs roughly **$0.05–0.15**. Check spend any
-time via `GET /cost`, or override the model with `HEDGI_MODEL=claude-opus-5`.
+time via `GET /cost`, or override the model with `ROBIN_MODEL=claude-opus-5`.
 
 ## Repo layout
 

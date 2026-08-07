@@ -1,6 +1,6 @@
 {
-  "name": "hedgi-swarm",
-  "displayName": "Hedgi Swarm",
+  "name": "robin-swarm",
+  "displayName": "Robin Swarm",
   "description": "Multi-agent coding swarm: plan, sketch, build, review, run.",
   "version": "0.1.0",
   "engines": { "vscode": "^1.90.0" },
@@ -10,8 +10,8 @@
     "chatParticipants": [
       {
         "id": "swarm",
-        "fullName": "Hedgi",
-        "name": "hedgi",
+        "fullName": "Robin",
+        "name": "robin",
         "description": "Plans, sketches, builds, reviews, and runs code with you."
       }
     ]

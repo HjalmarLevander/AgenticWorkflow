@@ -13,12 +13,12 @@ SANDBOX_DIR = Path(__file__).parent.parent / "sandbox"
 # Docker Desktop and Colima only bind-mount paths under $HOME by default — the
 # system tempdir (/var/folders/... on macOS) is invisible inside the VM, so
 # volume mounts from tempfile's default location silently show up empty.
-SANDBOX_TMP_ROOT = Path.home() / ".cache" / "hedgi-sandbox"
+SANDBOX_TMP_ROOT = Path.home() / ".cache" / "robin-sandbox"
 
 LANGUAGES = {
     "python": {
         "extensions": {".py"},
-        "image": "hedgi-sandbox-python",
+        "image": "robin-sandbox-python",
         "dockerfile": "Dockerfile.python",
         "test_glob": ("test_*.py", "*_test.py"),
         "test_cmd": ["pytest", "-q"],
@@ -26,7 +26,7 @@ LANGUAGES = {
     },
     "node": {
         "extensions": {".js", ".ts"},
-        "image": "hedgi-sandbox-node",
+        "image": "robin-sandbox-node",
         "dockerfile": "Dockerfile.node",
         "test_glob": ("*.test.js",),
         "test_cmd": ["node", "--test"],
