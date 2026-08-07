@@ -1,0 +1,28 @@
+{
+  "name": "hedgi-swarm",
+  "displayName": "Hedgi Swarm",
+  "description": "Multi-agent coding swarm: plan, sketch, build, review, run.",
+  "version": "0.1.0",
+  "engines": { "vscode": "^1.90.0" },
+  "main": "./out/extension.js",
+  "activationEvents": ["onChatParticipant:swarm"],
+  "contributes": {
+    "chatParticipants": [
+      {
+        "id": "swarm",
+        "fullName": "Hedgi",
+        "name": "hedgi",
+        "description": "Plans, sketches, builds, reviews, and runs code with you."
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.90.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0"
+  }
+}

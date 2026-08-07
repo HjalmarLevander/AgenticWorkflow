@@ -1,0 +1,15 @@
+# Style vault: large reference repos/pages the user provides locally — not source we own.
+style_vault/*
+!style_vault/.gitkeep
+
+# Local vector index (rebuilt from style_vault/ via ingest())
+backend/.chroma/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Node / VS Code extension
+extension/node_modules/
+extension/out/
