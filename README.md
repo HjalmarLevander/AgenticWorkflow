@@ -51,10 +51,13 @@ cd extension && npm install
 ### Populating the style vault (optional but recommended)
 
 Drop reference code into `style_vault/` (any `.py`/`.md`/`.rst`/`.txt`) —
-your own old projects, or clone reference repos:
+your own old projects, or clone reference repos. `style_vault/` is
+gitignored (it's third-party code, not something to carry in this repo's
+history), so run the fetch script once after cloning to pull the same set
+used during development:
 
 ```sh
-git clone --depth 1 https://github.com/TheAlgorithms/Python.git style_vault/thealgorithms-python
+./scripts/fetch_style_vault.sh
 ```
 
 It's embedded locally (no API cost) on server startup, or on demand via
