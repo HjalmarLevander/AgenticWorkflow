@@ -1,6 +1,6 @@
 # Robin Swarm
 
-A multi-agent coding system, driven from VS Code chat, that turns a request
+A multi-agent coding system that turns a request
 into reviewed, sandbox-verified code:
 
 **Planner** (scopes the work, names the risk) → confirm → **HTML Draft**
@@ -10,6 +10,17 @@ code + tests, grounded in a RAG-retrieved corpus of reference implementations)
 files, not vibes) → revise if rejected → **Runner** (actually executes the
 code and its tests in an isolated Docker container — not an LLM opinion, a
 real pass/fail).
+
+The goal of this is to make the coding pipeline simpler. That is, prompt
+project and start planning. Once planning is done, see an HTML draft of 
+what final product should look like. Begin writing code. The engineer is
+given a large context of concise production grade code. The intention of 
+the engineer is to write as few lines of code as possible in order to make
+human review simpler and eventually large scale projects more tractable. 
+Then the critic includes multiple personas who discuss the code and see if 
+any algorithm can be improved, what the inefficiencies are, etc. Lastly, the 
+runner ensure everything is working as intended before you are provided the 
+final result. 
 
 ## Architecture
 
